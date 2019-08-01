@@ -109,13 +109,8 @@ def xml_to_csv(filename):
                       revision_id, timestamp,
                       contributor_id,contributor_name,comment,
                       bytes_var]
-
-      # Do not print (skip) revisions that has any of the fields not available
-      if not has_empty_field(revision_row):
-        output_csv.write(csv_separator.join(revision_row) + '\n')
-      else:
-        print("The following line has imcomplete info and therefore it's been removed from the dataset:")
-        print(revision_row)
+      
+      output_csv.write(csv_separator.join(revision_row) + '\n')
 
       # Debug lines to standard output
       if Debug:
