@@ -36,17 +36,16 @@ def xml_to_csv(filename):
     nonlocal minor, bytes_var
 
     _current_tag = tag
-
-    if tag == 'text':
+    
+    if tag == 'minor':
+      minor = '1'
+    elif tag == 'text':
       if 'bytes' in attrs:
         bytes_var = attrs['bytes']
       else: # There's a 'deleted' flag or no info about bytes of the edition
         bytes_var = '-1'
     elif tag == 'page' or tag == 'revision' or tag == 'contributor':
       _parent = tag
-
-    if tag == 'minor':
-      minor = True
 
     if tag == 'upload':
       print("!! Warning: '<upload>' element not being handled", file=sys.stderr)
@@ -109,6 +108,9 @@ def xml_to_csv(filename):
 
     # print revision to revision output csv
     if tag == 'revision':
+       
+      if not minor == '1':
+        minor = '0'      
 
       revision_row = [page_id, page_title, page_ns,
                       revision_id, timestamp,
