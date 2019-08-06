@@ -11,6 +11,7 @@ for pandas processing.
 
 import xml.parsers.expat
 import sys
+import time
 
 __version__ = '2.0.1'
 
@@ -188,13 +189,14 @@ def xml_to_csv(filename):
 
   return True
 
-
 if __name__ == "__main__":
   if(len(sys.argv)) >= 2:
     print ('Dump files to process: {}'.format(sys.argv[1:]))
     for xmlfile in sys.argv[1:]:
+      tick = time.time()
       print("Starting to parse file " + xmlfile)
       if xml_to_csv(xmlfile):
-        print("Data dump {} parsed succesfully".format(xmlfile))
+        tock = time.time()
+        print("Data dump {0} parsed succesfully in {1:2f} minutes".format(xmlfile, ((tock-tick)/60))
   else:
     print("Error: Invalid number of arguments. Please specify one or more .xml file to parse", file=sys.stderr)
