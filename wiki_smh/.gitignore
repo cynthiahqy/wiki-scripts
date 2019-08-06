@@ -1,4 +1,7 @@
 # Data files
+
+DATA*/
+
 *.csv
 *.xml
 *.gz

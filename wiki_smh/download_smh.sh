@@ -8,7 +8,7 @@ wiki="$1wiki"
 date="$2"
 
 ## Make download folder
-path="$HOME/Data/stub-meta-history_$date"
+path="$PWD/DATA_stub-meta-history_$date"
 
 if [ ! -d "$path" ]
 then
