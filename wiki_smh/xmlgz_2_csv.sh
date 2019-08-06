@@ -3,11 +3,19 @@
 # USAGE: bash -i xmlgz_2_csv.sh <xmlgz_list.txt> <n_head=10000> <n_tail=
 # Requires wiki_dump_parser python packaged
 
-# Find list of files to convert 
+# Initialise parameters
 input=$1
 n_head=${2:-100000}
 n_tail=${3:-100000}
 
+DEBUG="$PWD/debug"
+
+if [ ! -d $DEBUG ]
+then
+    mkdir $DEBUG
+fi
+
+# Read list into array 
 if [ ${input#*.} == "txt" ]
 then 
     list="$input"
@@ -24,8 +32,6 @@ else
     files[0]="$input"
 fi 
 
-# Read list into array 
-
 # Loop over each file -- unzip, parse to csv, delete xml
 
 # unzip
@@ -40,13 +46,13 @@ do
     xmlfile=${gzfile%.gz}
     
     echo "Extracting page elements from first $n_head lines into head_$xmlfile"
-    head -n $n_head $xmlfile |
-    sed -n '/<page>/,/<\/page>/p' > "head_$xmlfile"
+    head -n $n_head $xmlfile | sed -n '/<page>/,/<\/page>/p' > "$DEBUG/head_$xmlfile"
+
     echo "Extracting last $n_tail lines into tail_$xmlfile"
-    tail -n $n_tail $xmlfile > "tail_$xmlfile"
+    tail -n $n_tail $xmlfile > "$DEBUG/tail_$xmlfile"
 
 	echo "Parsing XML to CSV"
-    python -m wiki_dump_parser "$xmlfile" > parser-log_${xmlfile%.*}
+    python -m wiki_dump_parser "$xmlfile" #>> $DEBUG/parser-log_${xmlfile%.*}
 
     if [ -f ${xmlfile/%.xml/.csv} ]
 	then 
