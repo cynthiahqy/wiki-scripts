@@ -14,7 +14,7 @@ import sys
 
 __version__ = '2.0.1'
 
-Debug = False
+Debug = False 
 
 csv_separator = ","
 
@@ -89,13 +89,21 @@ def xml_to_csv(filename):
     nonlocal minor,bytes_var
 
 
-    def has_empty_field(l):
+    def has_empty_field(lst):
       field_empty = False;
       i = 0
-      while (not field_empty and i<len(l)):
-        field_empty = (l[i] == '');
+      while (not field_empty and i<len(lst)):
+        field_empty = (lst[i] == '');
         i = i + 1
       return field_empty
+
+    def has_nAn_field(lst):
+      field_nAn = False;
+      i = 0
+      while (not field_nAn and i<len(lst)):
+        field_nAn = (not lst[i].isdigit());
+        i = i + 1
+      return field_nAn
 
 
     # uploading one level of parent if any of these tags close
@@ -116,14 +124,27 @@ def xml_to_csv(filename):
                       revision_id, timestamp,
                       contributor_id,contributor_name,comment,
                       minor,bytes_var]
+ 
+      # check for incorrect data types and empty fields (except empty comment)
+      num_fields = [page_id, page_ns, revision_id, minor, bytes_var]
+      nonComment_fields = [page_title, timestamp, contributor_id, contributor_name]  
 
-      # print rows with empty fields
-      if not has_empty_field(revision_row):
-        output_csv.write(csv_separator.join(revision_row) + '\n')
-      else:
-        print(revision_row)
-        output_csv.write(csv_separator.join(revision_row) + '\n')
-
+      if (has_nAn_field(num_fields) and has_empty_field(nonComment_fields)):
+        errors = ['1','1']
+        print('nAn & empty '+revision_row)
+        error_csv.write(csv_separator.join(revision_row + errors) + '\n')
+      elif has_nAn_field(num_fields):
+        errors = ['1','0'] 
+        print('nAn ONLY '+revision_row)
+        error_csv.write(csv_separator.join(revision_row + errors) + '\n')
+      elif has_empty_field(nonComment_fields):
+        error_type = ['0','1']
+        print('empty ONLY '+revision_row)
+        error_csv.write(csv_separator.join(revision_row + errors) + '\n')
+ 
+      # write every row to csv
+      output_csv.write(csv_separator.join(revision_row) + '\n')
+      
       # Debug lines to standard output
       if Debug:
         print(csv_separator.join(revision_row))
@@ -146,6 +167,11 @@ def xml_to_csv(filename):
   parser.CharacterDataHandler = data_handler
   parser.buffer_text = True
   parser.buffer_size = 1024
+
+  # writing error csv file
+  error_csv = open("error_"+filename[0:-3]+"csv",'w', encoding='utf8')
+  error_csv.write(csv_separator.join(["page_id","page_title","page_ns","revision_id","timestamp","contributor_id","contributor_name","comment","minor","bytes","nAn","empty"]))
+  error_csv.write("\n")
 
   # writing header for output csv file
   output_csv = open(filename[0:-3]+"csv",'w', encoding='utf8')
