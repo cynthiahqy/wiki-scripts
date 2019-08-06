@@ -138,7 +138,7 @@ def xml_to_csv(filename):
   ### BEGIN xml_to_csv body ###
 
   # Initializing xml parser
-  parser = xml.parsers.expat.ParserCreate()
+  parser = xml.parsers.expat.ParserCreate(encoding='UTF-8')
   input_file = open(filename, 'rb')
 
   parser.StartElementHandler = start_tag
