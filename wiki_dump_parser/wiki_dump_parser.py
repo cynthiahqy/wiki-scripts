@@ -132,15 +132,15 @@ def xml_to_csv(filename):
 
       if (has_nAn_field(num_fields) and has_empty_field(nonComment_fields)):
         errors = ['1','1']
-        print('nAn & empty '+revision_row)
+        print('nAn & empty ', revision_row)
         error_csv.write(delim_char.join(revision_row + errors) + '\n')
       elif has_nAn_field(num_fields):
         errors = ['1','0'] 
-        print('nAn ONLY '+revision_row)
+        print('nAn ONLY ', revision_row)
         error_csv.write(delim_char.join(revision_row + errors) + '\n')
       elif has_empty_field(nonComment_fields):
-        error_type = ['0','1']
-        print('empty ONLY '+revision_row)
+        errors = ['0','1']
+        print('empty ONLY ', revision_row)
         error_csv.write(delim_char.join(revision_row + errors) + '\n')
  
       # write every row to csv
@@ -197,6 +197,7 @@ if __name__ == "__main__":
       print("Starting to parse file " + xmlfile)
       if xml_to_csv(xmlfile):
         tock = time.time()
-        print("Data dump {0} parsed succesfully in {1:2f} minutes".format(xmlfile, ((tock-tick)/60))
+        print("Data dump {0} parsed succesfully in {1:2f} minutes".format(xmlfile, (tock-tick)/60))
   else:
     print("Error: Invalid number of arguments. Please specify one or more .xml file to parse", file=sys.stderr)
+    sys.exit(1)
