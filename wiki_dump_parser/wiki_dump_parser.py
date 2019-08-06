@@ -198,6 +198,7 @@ if __name__ == "__main__":
       if xml_to_csv(xmlfile):
         tock = time.time()
         print("Data dump {0} parsed succesfully in {1:2f} minutes".format(xmlfile, (tock-tick)/60))
+        sys.exit(0)
   else:
     print("Error: Invalid number of arguments. Please specify one or more .xml file to parse", file=sys.stderr)
     sys.exit(1)

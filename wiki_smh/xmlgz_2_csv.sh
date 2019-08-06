@@ -41,25 +41,31 @@ fi
 
 for gzfile in ${files[@]}
 do
-    echo "Decompressing $gzfile"
-    gzip -dk $gzfile
     xmlfile=${gzfile%.gz}
-    
-    echo "Extracting page elements from first $n_head lines into head_$xmlfile"
-    head -n $n_head $xmlfile | sed -n '/<page>/,/<\/page>/p' > "$DEBUG/head_$xmlfile"
 
-    echo "Extracting last $n_tail lines into tail_$xmlfile"
-    tail -n $n_tail $xmlfile > "$DEBUG/tail_$xmlfile"
+    if [ ! -f $xmlfile ]
+    then
+        echo "Decompressing $gzfile"
+        gzip -dk $gzfile
+        echo "Extracting page elements from first $n_head lines into head_$xmlfile"
+        head -n $n_head $xmlfile | sed -n '/<page>/,/<\/page>/p' > "$DEBUG/head_$xmlfile"
+        echo "Extracting last $n_tail lines into tail_$xmlfile"
+        tail -n $n_tail $xmlfile > "$DEBUG/tail_$xmlfile"
+    else
+        echo "$xmlfile previously decompressed"
+    fi
 
 	echo "Parsing XML to CSV"
-    python -m wiki_dump_parser "$xmlfile" #>> $DEBUG/parser-log_${xmlfile%.*}
+    python -m wiki_dump_parser "$xmlfile" >> $DEBUG/parser-log_${xmlfile%.*}
 
-    if [ -f ${xmlfile/%.xml/.csv} ]
+    parser_exit=$?
+
+    if [ $parser_exit == 0 ]
 	then 
-        echo "Removing $xmlfile"
-        rm "$xmlfile"
+        echo "$xmlfile was successfully parsed. Removing file"
+        rm "$xmlfile" "$gzfile"
     else
-		echo "Error parsing $xmlfile. Exiting loop"
-		exit 3
+		echo "Error parsing $xmlfile. Continuing to next file." 
+        echo $xmlfile >> log-retry  
     fi
 done
