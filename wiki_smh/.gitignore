@@ -1,0 +1,11 @@
+# Data files
+*.csv
+*.xml
+*.gz
+*.html
+*.txt
+
+# Log files
+*log*
+
+
