@@ -48,7 +48,7 @@ do
         echo "Decompressing $gzfile"
         gzip -dk $gzfile
         echo "Extracting page elements from first $n_head lines into head_$xmlfile"
-        head -n $n_head $xmlfile | sed -n '/<page>/,/<\/page>/p' > "$DEBUG/head_$xmlfile"
+        head -n $n_head $xmlfile > "$DEBUG/head_$xmlfile"
         echo "Extracting last $n_tail lines into tail_$xmlfile"
         tail -n $n_tail $xmlfile > "$DEBUG/tail_$xmlfile"
     else
@@ -56,7 +56,7 @@ do
     fi
 
 	echo "Parsing XML to CSV"
-    python -m wiki_dump_parser "$xmlfile" >> $DEBUG/parser-log_${xmlfile%.*}
+    python -m wiki_dump_parser "$xmlfile" >> $DEBUG/log_${xmlfile%.*}
 
     parser_exit=$?
 
@@ -66,6 +66,6 @@ do
         rm "$xmlfile" "$gzfile"
     else
 		echo "Error parsing $xmlfile. Continuing to next file." 
-        echo $xmlfile >> log-retry  
+        echo $xmlfile [$(date)] >> log-retry  
     fi
 done

@@ -131,17 +131,11 @@ def xml_to_csv(filename):
       nonComment_fields = [page_title, timestamp, contributor_id, contributor_name]  
 
       if (has_nAn_field(num_fields) and has_empty_field(nonComment_fields)):
-        errors = ['1','1']
         print('nAn & empty ', revision_row)
-        error_csv.write(delim_char.join(revision_row + errors) + '\n')
       elif has_nAn_field(num_fields):
-        errors = ['1','0'] 
         print('nAn ONLY ', revision_row)
-        error_csv.write(delim_char.join(revision_row + errors) + '\n')
       elif has_empty_field(nonComment_fields):
-        errors = ['0','1']
         print('empty ONLY ', revision_row)
-        error_csv.write(delim_char.join(revision_row + errors) + '\n')
  
       # write every row to csv
       output_csv.write(delim_char.join(revision_row) + '\n')
@@ -168,11 +162,6 @@ def xml_to_csv(filename):
   parser.CharacterDataHandler = data_handler
   parser.buffer_text = True
   parser.buffer_size = 1024
-
-  # writing error csv file
-  error_csv = open("error_"+filename[0:-3]+"tsv",'w', encoding='utf8')
-  error_csv.write(delim_char.join(["page_id","page_title","page_ns","revision_id","timestamp","contributor_id","contributor_name","comment","minor","bytes","nAn","empty"]))
-  error_csv.write("\n")
 
   # writing header for output csv file
   output_csv = open(filename[0:-3]+"tsv",'w', encoding='utf8')
